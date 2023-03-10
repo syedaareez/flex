@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { fetchwrapper } from "../helpers/Fetchwrapper";
 
 export default function Register(){
 
@@ -14,14 +15,9 @@ export default function Register(){
 
             const url=`${process.env.REACT_APP_PRODUCTION_URL}app/createuser`
 
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: userName, password:userPassword, email:userEmail })
-            };
+            const requestOptions = {name: userName, password:userPassword, email:userEmail };
 
-            fetch(url,requestOptions)
-            .then((res) => res.json())
+            fetchwrapper.post(url,requestOptions)
             .then((data) => {
                 console.log(data," came after creating the user!!! ")
             })
