@@ -2,7 +2,7 @@
 
 from django.urls import path, include
 from .views import (
-    BlogListApiView,UserApiView,UserLogoutView
+    BlogListApiView,UserApiView,UserLogoutView,UserDetailsView
 )
 
 
@@ -10,5 +10,8 @@ from .views import (
 urlpatterns = [
     path('blogs', BlogListApiView.as_view()),
     path("createuser",UserApiView.as_view()),
+
+    path("userdetails",UserDetailsView.as_view()),
+
     path('logout/', UserLogoutView.as_view(), name='token_obtain_pair'),
 ]

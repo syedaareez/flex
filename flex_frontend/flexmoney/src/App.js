@@ -4,20 +4,27 @@ import AuthForms from "./pages/authForms";
 
 import { BrowserRouter as Router,Routes,Route } from 'react-router-dom';
 import ProtectedRoutes from './helpers/ProtectedRoutes';
+import BLogs from './pages/blogs';
  
+import { RecoilRoot } from 'recoil';
+import CharacterCounter from './components/CharacterCounter';
 
 
 function App() {
   return (
     <>
-    <Router>
-      <Routes>
-        <Route exact index path="/signin" element={<AuthForms />} />
-        <Route element={<ProtectedRoutes />}>
-          <Route exact path="/" element={<Main />} />
-        </Route>
-      </Routes>
-    </Router>
+    <RecoilRoot> {/* Recoil Parent wrap */}
+      <Router>
+        <Routes>
+          <Route exact index path="/signin" element={<AuthForms />} />
+          <Route exact path="/test" element={<CharacterCounter />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route exact path="/" element={<Main />} />
+            <Route exact path="/blogs" element={<BLogs />} />
+          </Route>
+        </Routes>
+      </Router>
+    </RecoilRoot>
 
 
     {/* <AuthForms />

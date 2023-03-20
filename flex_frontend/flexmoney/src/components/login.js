@@ -2,11 +2,15 @@ import { useState } from "react"
 import { fetchwrapper } from "../helpers/Fetchwrapper";
 
 import {Buffer} from 'buffer';
+import { redirect, useLocation, useNavigate } from "react-router-dom/dist";
 
 export default function Login(){
 
     const [userName,setuserName]=useState("")
     const [userPassword,setuserPassword]=useState("")
+
+    const navigate=useNavigate();
+    const location= useLocation();
 
     function loginUser(e){
         e.preventDefault();
@@ -24,7 +28,15 @@ export default function Login(){
             .then((data) => {
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
-                console.log(data,JSON.parse(Buffer.from(data.access.split('.')[1],"base64")).exp*1000,Date.now()," came after logging the user!!! ")
+                // console.log(data,JSON.parse(Buffer.from(data.access.split('.')[1],"base64"))," came after logging the user!!! ")
+
+                if(location.state?.from){
+                    navigate(location.state?.from);
+                }else{
+                    navigate('/');
+                }
+                
+                
             })
             .catch((error)=>{
                 console.log(error," error from loginuser!!! ")
@@ -43,20 +55,6 @@ export default function Login(){
         <input type="password" onChange={e=>setuserPassword(e.target.value)} placeholder="password" value={userPassword}/>
         <input type="submit" value="Submit"/>
     </form>
-
-    <button onClick={(e)=>{
-        e.preventDefault();
-        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/logout/`;
-
-        fetchwrapper.post(url,{ refresh_token: localStorage.getItem('refresh_token'), })
-        .then(() => {
-            console.log(" loggedout ");
-            localStorage.clear();
-        })
-        .catch((error)=>{
-            console.log(error," error from logout !!! ");
-        })
-    }}>Logout</button>
     </>
     )
 }

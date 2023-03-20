@@ -14,6 +14,8 @@ from .serializers import BlogDataSerializer,UserDataRegisteredSerializer
 
 from django.contrib.auth.models import User
 
+from django.db import connection
+
 
 class UserApiView(APIView):
 
@@ -50,7 +52,19 @@ class UserLogoutView(APIView):
             token.blacklist()
             return Response("Logged Out Successfully")
         except Exception as e:
-            return Response(d,status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+class UserDetailsView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def post(self, request):
+        user=User.objects.filter(id=request.data.get("id"))
+        print(connection.queries[-1]," this is the user")
+        if(user):
+          serializer = UserDataRegisteredSerializer(user,many=True)
+          return Response(serializer.data, status=status.HTTP_200_OK)      
+        return Response("Not a valid user")
+
+        
 
 class BlogListApiView(APIView):
 
