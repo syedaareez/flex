@@ -69,14 +69,32 @@ export default function Main(){
 
     useEffect(()=>{
 
-        const id = JSON.parse(Buffer.from(localStorage.getItem("access_token").split('.')[1],"base64")).user_id
-
-        fetchwrapper.post(`${process.env.REACT_APP_PRODUCTION_URL}app/userdetails`,{id:id})
-        .then((data)=>{
-            fetchUserDetails(data);               
-        })
+        const updateMyData = () => {
+            fetchUserDetails(JSON.parse(localStorage.getItem("userdetails")));
+        };
+        updateMyData();  
 
     },[])
+
+
+
+
+    function handle_logout(e){
+        
+        e.preventDefault();
+            
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/logout/`;
+
+        fetchwrapper.post(url,{ refresh_token: localStorage.getItem('refresh_token'), })
+        .then(() => {
+            // console.log(" loggedout ");
+            localStorage.clear();
+            navigate("/signin");
+        })
+        .catch((error)=>{
+            console.log(error," error from logout !!! ");
+        })
+    }
 
 
     return(
@@ -115,22 +133,7 @@ export default function Main(){
         
         <h1>MAIN PAGE, Welcome {userDetails?.[0]?.username} {userDetails?.[0]?.email}!</h1>
 
-        <button onClick={(e)=>{
-
-            e.preventDefault();
-            
-            const url=`${process.env.REACT_APP_PRODUCTION_URL}app/logout/`;
-
-            fetchwrapper.post(url,{ refresh_token: localStorage.getItem('refresh_token'), })
-            .then(() => {
-                // console.log(" loggedout ");
-                localStorage.clear();
-                navigate("/signin");
-            })
-            .catch((error)=>{
-                console.log(error," error from logout !!! ");
-            })
-        }}>Logout</button>
+        <button onClick={handle_logout}>Logout</button>
         </>
     ) 
 }

@@ -30,11 +30,18 @@ export default function Login(){
                 localStorage.setItem('refresh_token', data.refresh);
                 // console.log(data,JSON.parse(Buffer.from(data.access.split('.')[1],"base64"))," came after logging the user!!! ")
 
-                if(location.state?.from){
-                    navigate(location.state?.from);
-                }else{
-                    navigate('/');
-                }
+                fetchwrapper.post(`${process.env.REACT_APP_PRODUCTION_URL}app/userdetails`,{id:JSON.parse(Buffer.from(localStorage.getItem("access_token").split('.')[1],"base64")).user_id})
+                .then((data)=>{
+                    localStorage.setItem("userdetails",JSON.stringify(data) )              
+                }).then(()=>{
+                    if(location.state?.from){
+                        navigate(location.state?.from);
+                    }else{
+                        navigate('/');
+                    }
+                })
+
+                
                 
                 
             })

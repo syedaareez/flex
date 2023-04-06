@@ -44,7 +44,7 @@ class UserApiView(APIView):
 # User Logout
 
 class UserLogoutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     def post(self, request):
         try:
             refresh_token = request.data.get("refresh_token")
@@ -58,7 +58,7 @@ class UserDetailsView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     def post(self, request):
         user=User.objects.filter(id=request.data.get("id"))
-        print(connection.queries[-1]," this is the user")
+        # print(connection.queries[-1]," this is the user")
         if(user):
           serializer = UserDataRegisteredSerializer(user,many=True)
           return Response(serializer.data, status=status.HTTP_200_OK)      
