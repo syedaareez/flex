@@ -4,7 +4,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom/dist";
-import { fetchwrapper } from "../helpers/Fetchwrapper";
+import { fetchwrapper } from "../helpers/fetchwrapper";
 
 import { Buffer } from "buffer";
 
