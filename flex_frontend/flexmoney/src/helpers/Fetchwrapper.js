@@ -87,7 +87,21 @@ function post(url,params){
 
 }
 
+function delete_(url,params){
+    const headers=getHeaders();
+    
+    return fetch(url,{
+        method:"DELETE",
+        headers:headers,
+        body:JSON.stringify({...params}),
+    })
+    .then(response=>{
+        return response.json();
+    })
+}
+
 export const fetchwrapper = {
     get,
     post,
+    delete_,
 };

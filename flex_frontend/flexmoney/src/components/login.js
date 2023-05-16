@@ -4,6 +4,8 @@ import { fetchwrapper } from "../helpers/fetchwrapper";
 import {Buffer} from 'buffer';
 import { useLocation, useNavigate } from "react-router-dom/dist";
 
+import { Link } from "react-router-dom";
+
 export default function Login({changeFunc}){
 
     const [userName,setuserName]=useState("")
@@ -20,9 +22,6 @@ export default function Login({changeFunc}){
             const url=`${process.env.REACT_APP_PRODUCTION_URL}api/token/`
 
             const requestOptions = { username: userName, password:userPassword };
-
-
-              
 
             fetchwrapper.post(url,requestOptions)
             .then((data) => {
@@ -69,7 +68,16 @@ export default function Login({changeFunc}){
 
 
     <div>
+
             <div className="bg-gradient-to-r from-gray-900 to-violet-900 flex flex-col items-center min-h-screen pt-6 sm:justify-center sm:pt-0 bg-gray-100">
+                
+                <Link
+                to="/"
+                className="text-white fixed top-5 left-5"
+                >
+                {`< Home`}
+                </Link>
+                
                 <div className="w-full px-6 py-4 mt-6 overflow-hidden bg-white shadow-lg sm:max-w-md sm:rounded-lg">
                     <form onSubmit={loginUser}>
                         <div>

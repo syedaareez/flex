@@ -43,3 +43,28 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+    
+class Board(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=550)
+
+    def __str__(self):
+        return self.title
+    
+class Card(models.Model):
+    name = models.CharField(max_length=255)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='cards')
+
+    def __str__(self):
+        return self.name
+    
+class Task(models.Model):
+    name = models.CharField(max_length=255)
+    details = models.TextField()
+    due = models.DateTimeField(blank=True,null=True)
+    members = models.ManyToManyField(User, blank=True, related_name='task_members')
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, related_name='tasks')
+
+    def __str__(self):
+        return self.name

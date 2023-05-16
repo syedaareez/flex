@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { fetchwrapper } from "../helpers/fetchwrapper";
+import { Link } from "react-router-dom";
 
 export default function Register({changeFunc}){
 
@@ -46,6 +47,13 @@ export default function Register({changeFunc}){
 
         <div>
             <div className="bg-gradient-to-r from-gray-900 to-violet-900 flex flex-col items-center min-h-screen pt-6 sm:justify-center sm:pt-0 bg-gray-100">
+                
+                <Link
+                to="/"
+                className="text-white fixed top-5 left-5"
+                >
+                {`< Home`}
+                </Link>
                 <div className="w-full px-6 py-4 mt-6 overflow-hidden bg-white shadow-lg sm:max-w-md sm:rounded-lg">
                     <form onSubmit={createUser}>
                         <div>

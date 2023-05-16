@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -8,8 +8,8 @@ from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-from .models import Blog
-from .serializers import BlogDataSerializer,UserDataRegisteredSerializer
+from .models import Blog,Board,Card,Task
+from .serializers import BlogDataSerializer,UserDataRegisteredSerializer,BoardSerializer,CardSerializer,TaskSerializer
 
 
 from django.contrib.auth.models import User
@@ -93,5 +93,88 @@ class BlogListApiView(APIView):
         blog=Blog.objects.get(id=request.data.get('blog_id'))
         blog.delete()
         return Response("BLog deleted sucessfully")
+    
 
+
+    # BOARDS
+
+class UserBoards(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        boards=Board.objects.filter(user=self.request.user)
+        serializer=BoardSerializer(boards,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        data = {
+            'title': request.data.get('title'), 
+            'description': request.data.get('description'), 
+            'user':self.request.user.id
+        }
+        serializer = BoardSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        BOARD=Board.objects.get(id=request.data.get('board_id'))
+        BOARD.delete()
+        return Response("BOARD deleted sucessfully")
+
+
+class BoardCard(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        cards=Card.objects.filter(board=self.kwargs["board_id"])
+        serializer=CardSerializer(cards,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        data = {
+            'name': request.data.get('name'), 
+            'board':self.kwargs["board_id"]
+        }
+        serializer = CardSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        CARD=Card.objects.get(id=request.data.get('card_id'))
+        CARD.delete()
+        return Response("CARD deleted sucessfully")
+    
+class CardTask(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        board = get_object_or_404(Board, id=self.kwargs["board_id"])
+        tasks = Task.objects.filter(card__board=board)
+        serializer=TaskSerializer(tasks,many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        data = {
+            'name': request.data.get('name'), 
+            'details': request.data.get('details'), 
+            'card': request.data.get('card_id'), 
+        }
+        serializer = TaskSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # def delete(self, request, *args, **kwargs):
+    #     CARD=Card.objects.get(id=request.data.get('card_id'))
+    #     CARD.delete()
+    #     return Response("CARD deleted sucessfully")
 

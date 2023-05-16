@@ -8,6 +8,12 @@ import { fetchwrapper } from "../helpers/fetchwrapper";
 
 import { Buffer } from "buffer";
 
+import{FaRegUserCircle} from 'react-icons/fa';
+
+import SideNav from "../components/sideNav";
+import Header from "../components/header";
+import MainInside from "../components/mainInside";
+
 
 
 export default function Main(){
@@ -97,6 +103,19 @@ export default function Main(){
     }
 
 
+
+
+
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const handleToggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
+    
+
+
+
     return(
         <>
         {/* <h1>All Users</h1>
@@ -128,12 +147,22 @@ export default function Main(){
             <input type="submit" value="Submit"/>
         </form> */}
 
-       
 
-        
-        <h1>MAIN PAGE, Welcome {userDetails?.[0]?.username} {userDetails?.[0]?.email}!</h1>
+        <div className="flex h-screen">
 
-        <button onClick={handle_logout}>Logout</button>
-        </>
+
+        <nav className={`${
+            isSidebarOpen ? "block" : "hidden"
+            } md:w-64 bg-gray-800`}>
+                <SideNav handle_logout={(e)=>handle_logout(e)} />
+        </nav>
+
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header HandleToggleSidebar={()=>handleToggleSidebar()} Handle_logout={(e)=>handle_logout(e)} UserDetails={userDetails}/>
+
+        <MainInside />
+       </div>
+    </div>
+    </>
     ) 
 }
