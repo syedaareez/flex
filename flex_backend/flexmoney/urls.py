@@ -2,17 +2,18 @@
 
 from django.urls import path, include
 from .views import (
-    BlogListApiView,UserApiView,UserLogoutView,UserDetailsView,UserBoards,BoardCard,CardTask
+    UserApiView,UserLogoutView,UserDetailsView,UserBoards,BoardCard,CardTask,UserProjects
 )
 
 
 
 urlpatterns = [
-    path('blogs', BlogListApiView.as_view()),
     path("createuser",UserApiView.as_view()),
 
     path("userdetails",UserDetailsView.as_view()),
 
+    path("projects",UserProjects.as_view()),
+    
     path("boards",UserBoards.as_view()),
 
     path("boards/<int:board_id>/cards",BoardCard.as_view()),

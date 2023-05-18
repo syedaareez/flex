@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Blog,Board,Card,Task
+from .models import Board,Card,Task
 
 
 from django.contrib.auth.models import User
@@ -10,17 +10,16 @@ class UserDataRegisteredSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id","username", "email"]
 
-
-class BlogDataSerializer(serializers.ModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Blog
-        fields = ["title", "content", "author"]
+        model = Board
+        fields = ["id",'user', 'name', 'description','members']
 
 
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
-        fields = ["id",'user', 'title', 'description']
+        fields = ["id",'user', 'title', 'description','project']
 
 class CardSerializer(serializers.ModelSerializer):
     class Meta:

@@ -34,23 +34,24 @@ from django.dispatch import receiver
     # user.profile.bio = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit...'
     # user.save()
 
+    
 
-class Blog(models.Model):
-    title= models.CharField(max_length = 180)
-    content= models.CharField(max_length = 580)
-    # author=models.ForeignKey(UserDetails, on_delete = models.CASCADE, blank = True, null = True)
-    author=models.CharField(max_length = 18)
+class Project(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True,null=True)
+    members = models.ManyToManyField(User, related_name='projects') 
 
     def __str__(self):
-        return self.title
-    
+        return self.name   
+
 class Board(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=550)
-
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
-        return self.title
+        return self.title    
     
 class Card(models.Model):
     name = models.CharField(max_length=255)
@@ -61,7 +62,7 @@ class Card(models.Model):
     
 class Task(models.Model):
     name = models.CharField(max_length=255)
-    details = models.TextField()
+    details = models.TextField(blank=True,null=True)
     due = models.DateTimeField(blank=True,null=True)
     members = models.ManyToManyField(User, blank=True, related_name='task_members')
     card = models.ForeignKey(Card, on_delete=models.CASCADE, related_name='tasks')

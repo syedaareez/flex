@@ -8,8 +8,8 @@ from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-from .models import Blog,Board,Card,Task
-from .serializers import BlogDataSerializer,UserDataRegisteredSerializer,BoardSerializer,CardSerializer,TaskSerializer
+from .models import Board,Card,Task,Project
+from .serializers import UserDataRegisteredSerializer,BoardSerializer,CardSerializer,TaskSerializer,ProjectSerializer
 
 
 from django.contrib.auth.models import User
@@ -63,40 +63,15 @@ class UserDetailsView(APIView):
           serializer = UserDataRegisteredSerializer(user,many=True)
           return Response(serializer.data, status=status.HTTP_200_OK)      
         return Response("Not a valid user")
-
-        
-
-class BlogListApiView(APIView):
-
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, request, *args, **kwargs):
-        blogs = Blog.objects.all()
-        serializer = BlogDataSerializer(blogs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # 2. Create
-    def post(self, request, *args, **kwargs):
-        data = {
-            'title': request.data.get('title'), 
-            'content': request.data.get('content'), 
-            'author': request.data.get('author'),
-        }
-        serializer = BlogDataSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, *args, **kwargs):
-        blog=Blog.objects.get(id=request.data.get('blog_id'))
-        blog.delete()
-        return Response("BLog deleted sucessfully")
     
 
 
-    # BOARDS
+
+
+
+
+
+# BOARDS
 
 class UserBoards(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -163,7 +138,7 @@ class CardTask(APIView):
     def post(self, request, *args, **kwargs):
         data = {
             'name': request.data.get('name'), 
-            'details': request.data.get('details'), 
+            
             'card': request.data.get('card_id'), 
         }
         serializer = TaskSerializer(data=data)
@@ -177,4 +152,30 @@ class CardTask(APIView):
     #     CARD=Card.objects.get(id=request.data.get('card_id'))
     #     CARD.delete()
     #     return Response("CARD deleted sucessfully")
+
+
+class UserProjects(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        Projects=Project.objects.filter(user=self.request.user)
+        serializer=ProjectSerializer(Projects,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        data = {
+            'name': request.data.get('name'), 
+            'user':self.request.user.id
+        }
+        serializer = ProjectSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        Project=Project.objects.get(id=request.data.get('Project_id'))
+        Project.delete()
+        return Response("Project deleted sucessfully")
 

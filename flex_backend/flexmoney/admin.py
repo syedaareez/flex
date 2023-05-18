@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Blog,Board,Card,Task
+from .models import Board,Card,Task,Project
 # Register your models here.
-admin.site.register(Blog)
 admin.site.register(Board)
 admin.site.register(Card)
 admin.site.register(Task)
+admin.site.register(Project)
 # admin.site.register(Profile)
