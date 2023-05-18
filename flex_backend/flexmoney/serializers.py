@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Board,Card,Task
+from .models import Board,Card,Task,Project
 
 
 from django.contrib.auth.models import User
@@ -12,7 +12,7 @@ class UserDataRegisteredSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Board
+        model = Project
         fields = ["id",'user', 'name', 'description','members']
 
 

@@ -20,6 +20,7 @@ export default function Board(props) {
     const url=`${process.env.REACT_APP_PRODUCTION_URL}app/boards/${cardBoard}/cards`;
         fetchwrapper.get(url)
         .then((data)=>{
+            // console.log("All cards ",data)
             setAllcards(data);
         })
         .catch((error)=>{
@@ -109,6 +110,7 @@ export default function Board(props) {
   return (
     <div className="">
     <div className='relative flex flex-col text-center '>
+    <h1 className='text-white text-xsm mt-5'>Board View</h1>
     <div className="text-[45px]">{props.value.title}</div>{" "}
     <div className="max-h-[20px] overflow-clip">{props.value.description} 
 
@@ -148,7 +150,7 @@ export default function Board(props) {
                     }
 
                     <div className=" p-2 max-h-full overflow-y-auto">
-                        {alltasks?.map((tvalue,id)=>(
+                        {alltasks?.reverse().map((tvalue,id)=>(
                             <div key={id}>
                             {tvalue.card===value.id && 
                             <div className='border-[1px] border-gray-500 p-1 shadow-lg rounded-sm backdrop-blur-md flex-shrink-0 h-14 overflow-y-auto align-middle mx-3 mt-2'>

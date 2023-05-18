@@ -81,6 +81,73 @@ export default function Main(){
         setIsSidebarOpen(!isSidebarOpen);
     };
 
+
+
+    // PROJECT CREATION
+
+    const [ProjectTitle,setProjectTitle]=useState("")
+
+    const [allProjects,setAllProjects]=useState([])
+
+    function fetchAllProjects(){
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/projects`
+        fetchwrapper.get(url)
+        .then((data)=>{
+            setAllProjects(data);
+        })
+        .catch((error)=>{
+            console.log(error," error from fetch Project ")
+        })
+    }
+
+    function createProject(e){
+        e.preventDefault();
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/projects`;
+        const params={ name: ProjectTitle };
+        fetchwrapper.post(url,params)
+        .then((data) => {
+            setProjectTitle("");
+            // setProjectContent("");
+            fetchAllProjects();
+        })
+        .catch((error)=>{
+            console.log(error," error from post Project ")
+        })
+    }
+
+    function deleteProject(e,v){
+        e.stopPropagation();
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/projects`;
+        const params={ project_id: v };
+        fetchwrapper.delete_(url,params)
+        .then((data) => {
+            fetchAllProjects();
+        })
+        .catch((error)=>{
+            console.log(error," error from post Project ")
+        })
+    }
+
+    useEffect(()=>{
+        fetchAllProjects();
+    },[])
+
+
+
+    const [activeProject, setActiveProject]=useState(null);
+    const [activeProjectObject, setActiveProjectObject]=useState(null);
+
+    function setActiveProjectFunc(v){
+        if(v){
+            setActiveProject(v.id);
+        }else{
+            setActiveProject(null);
+        }
+        
+        setActiveProjectObject(v);
+    }
+
+
     
 
 
@@ -105,13 +172,13 @@ export default function Main(){
         <nav className={`${
             isSidebarOpen ? "block" : "hidden"
             } md:w-64 bg-gray-900`}>
-                <SideNav handle_logout={(e)=>handle_logout(e)} />
+                <SideNav activeProject={activeProject} setActiveProject={(v)=>setActiveProject(v)} setActiveProjectFunc={(v)=>setActiveProjectFunc(v)} ProjectTitle={ProjectTitle} setProjectTitle={(v)=>setProjectTitle(v)} allProjects={allProjects} fetchAllProjects={fetchAllProjects} createProject={(e)=>createProject(e)} deleteProject={(e,v)=>deleteProject(e,v)} handle_logout={(e)=>handle_logout(e)} />
         </nav>
 
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header HandleToggleSidebar={()=>handleToggleSidebar()} Handle_logout={(e)=>handle_logout(e)} UserDetails={userDetails}/>
 
-        <MainInside />
+        <MainInside projectObject={activeProjectObject}/>
        </div>
     </div>
     </>

@@ -82,11 +82,23 @@ class UserBoards(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
-        data = {
-            'title': request.data.get('title'), 
-            'description': request.data.get('description'), 
-            'user':self.request.user.id
-        }
+
+        project = request.data.get('project')
+
+        if(project):
+            data = {
+                'title': request.data.get('title'), 
+                'description': request.data.get('description'), 
+                'user':self.request.user.id,
+                'project':request.data.get('project')
+            }
+        else:
+            data = {
+                'title': request.data.get('title'), 
+                'description': request.data.get('description'), 
+                'user':self.request.user.id
+            }
+            
         serializer = BoardSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -158,8 +170,8 @@ class UserProjects(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        Projects=Project.objects.filter(user=self.request.user)
-        serializer=ProjectSerializer(Projects,many=True)
+        projects=Project.objects.filter(user=self.request.user)
+        serializer=ProjectSerializer(projects,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
@@ -175,7 +187,7 @@ class UserProjects(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, *args, **kwargs):
-        Project=Project.objects.get(id=request.data.get('Project_id'))
-        Project.delete()
+        Projects=Project.objects.get(id=request.data.get('project_id'))
+        Projects.delete()
         return Response("Project deleted sucessfully")
 

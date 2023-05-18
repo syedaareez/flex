@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Boards from './mainInside/boards';
 import Board from './mainInside/board';
 
-export default function MainInside() {
+export default function MainInside(props) {
 
   const [showBoard,setShowBoard]=useState(false);
   const [boardDetails,setBoardDetails]=useState({});
@@ -20,7 +20,7 @@ export default function MainInside() {
     
     ):(
     <main className="flex-1 overflow-y-auto px-4 py-5 text-center items-center">
-          <Boards  funcToShowBoard={(v)=>funcToShowBoard(v)}/>
+          <Boards ProjectObject={props.projectObject} funcToShowBoard={(v)=>funcToShowBoard(v)}/>
     </main>
     )}
     </div>

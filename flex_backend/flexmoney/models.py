@@ -40,7 +40,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True,null=True)
-    members = models.ManyToManyField(User, related_name='projects') 
+    members = models.ManyToManyField(User, related_name='projects',blank=True) 
 
     def __str__(self):
         return self.name   
