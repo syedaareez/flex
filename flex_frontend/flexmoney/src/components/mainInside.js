@@ -13,16 +13,16 @@ export default function MainInside() {
   }
 
   return (
-    <>
+    <div className='h-full bg-gray-600 text-gray-200'>
     {showBoard?(
 
     <Board value={boardDetails} funcToShowBoard={(v)=>funcToShowBoard(v)}/>
     
     ):(
-    <main className="flex-1 overflow-y-auto bg-gray-200 px-10 py-5 text-center items-center">
+    <main className="flex-1 overflow-y-auto px-4 py-5 text-center items-center">
           <Boards  funcToShowBoard={(v)=>funcToShowBoard(v)}/>
     </main>
     )}
-    </>
+    </div>
   )
 }

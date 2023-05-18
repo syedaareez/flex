@@ -1,6 +1,8 @@
 import React,{useEffect, useState} from 'react';
 import { fetchwrapper } from '../../helpers/fetchwrapper';
 
+import {MdDeleteOutline} from 'react-icons/md'
+
 
 export default function Boards(props) {
 
@@ -57,22 +59,32 @@ export default function Boards(props) {
 
   return (
     <>
-    Boards
-    <form onSubmit={createBoard}>
-        <input type="text" onChange={e=>setBoardTitle(e.target.value)} placeholder="title" value={BoardTitle}/>
-        <input type="text" onChange={e=>setBoardContent(e.target.value)} placeholder="Content" value={BoardContent}/>
-        <input type="submit" value="Submit"/>
-    </form>
-    <br /><br />
+    Personal Boards
+    <div className='w-full p-4'>
 
-    <h1>Personal Boards</h1>
-        <div style={{border:"2px solid black", padding:"20px", width:"screen", }}>
+    <form className=" w-[90%] flex justify-center align-middle" onSubmit={createBoard}>
+        <input className="px-2 text-gray-900 py-2 rounded shadow-md mr-1 outline-none w-[30%] text-base" type="text" onChange={e=>setBoardTitle(e.target.value)} placeholder="Title" value={BoardTitle}/>
+        <input className="px-2 text-gray-900 py-2 rounded shadow-md mr-1 outline-none w-[30%] text-base" type="text" onChange={e=>setBoardContent(e.target.value)} placeholder="Content" value={BoardContent}/>
+        <input className='rounded shadow-md px-1 py-0 bg-gray-700' type="submit" value="Create" />
+    </form>
+    </div>
+        <div 
+        
+        className="flex overflow-x-auto w-full bg-gradient-to-r from-gray-500 to-gray-700 shadow-inner"
+        >
             {allBoards?.map((value,id)=>(
-                <div onClick={()=>props.funcToShowBoard(value)} key={id} className='my-3 border-2 border-red-500'>
-                <span>title = {value.title}{value.id} </span>{" "}
-                <span>description = {value.description} </span>{" "}
-                <span>user id = {value.user} </span>
-                <span className="float-right mr-4 cursor-pointer" onClick={(e)=>deleteBoard(e,value.id)}>X</span>
+                <div
+                 style={{backgroundImage:`url('/sinewave.jpg')`,backgroundSize:"cover"}}
+                 onClick={()=>props.funcToShowBoard(value)} key={id} className='cursor-pointer m-2 my-3 shadow-xl w-[200px] h-[200px] bg-gray-700 rounded flex-shrink-0'>
+                    
+                    <div className='flex flex-col align-middle w-full h-full backdrop-blur-sm '>
+                        <div className='mt-3 text-gray-200 text-[25px] font-semibold'>{value.title}</div>{" "}
+                        <div className=' text-xs px-1 text-gray-300 max-h-[90px] mt-1 overflow-clip'>{value.description}
+                         </div>{" "}
+                        <div className='grow'></div>
+                        <div className="bg-gray-800 text-white hover:text-red-300 hover:bg-gray-900 py-1 flex justify-center text-lg bottom-0 backdrop-blur-lg float-right cursor-pointer" onClick={(e)=>deleteBoard(e,value.id)}><MdDeleteOutline /></div>
+                    </div>
+
                 </div>
             ))}
         </div>

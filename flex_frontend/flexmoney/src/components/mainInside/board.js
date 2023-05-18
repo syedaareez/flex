@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { fetchwrapper } from '../../helpers/fetchwrapper';
 
+import {IoIosArrowBack} from 'react-icons/io';
+import {MdDeleteOutline } from 'react-icons/md';
+
 export default function Board(props) {
 
   const [cardName,setCardName]=useState("");
   const [cardBoard,setCardBoard]=useState(props.value.id);
 
   const [taskName,setTaskName]=useState("");
-  const [taskDetail,setTaskDetail]=useState("");
+//   const [taskDetail,setTaskDetail]=useState("");
 
   const[allCards, setAllcards]=useState([]);
 
@@ -67,13 +70,12 @@ export default function Board(props) {
         e.preventDefault();
         const url=`${process.env.REACT_APP_PRODUCTION_URL}app/boards/${cardBoard}/tasks`;
 
-        const params={ name: taskName,details:taskDetail,card_id:card_id };
+        const params={ name: taskName,card_id:card_id };
 
         
         fetchwrapper.post(url,params)
         .then((data)=>{
             setTaskName("");
-            setTaskDetail("");
             fetchAllTasks();
             
         })
@@ -105,61 +107,64 @@ export default function Board(props) {
 
 
   return (
-    <>
-    <div className='border-2 border-red-500'>
-    <span>title = {props.value.title}{props.value.id} </span>{" "}
-    <span>description = {props.value.description} </span>{" "}
-    <span>user id = {props.value.user} </span>
-    </div><br /><br />
-    <div onClick={()=>props.funcToShowBoard({})}>Back</div>
-    <br /><br />
-    <div>Create A new Card!!</div>
-    <br />
-    <form onSubmit={createcard}>
-        <input type="text" onChange={e=>setCardName(e.target.value)} placeholder="title" value={cardName}/>
-        <input type="submit" value="Submit"/>
-    </form>
-    <br /><br />
-    <h1>All Cards</h1>
-        <div className='border-2 border-black p-[20px] max-w-screen flex overflow-x-scroll scrollbar'>
-            {allCards?.map((value,id)=>(
-                <div key={id} className='flex-shrink-0 mx-3 border-2 border-green-500 p-4'>
-                    <span>title = {value.name}{value.id} </span>{" "}
-                    <span>Board = {value.board} </span>{" "}
-                    <span className="float-right ml-4 cursor-pointer" onClick={(e)=>deleteCard(e,value.id)}>X</span>
-                    <br />
+    <div className="">
+    <div className='relative flex flex-col text-center '>
+    <div className="text-[45px]">{props.value.title}</div>{" "}
+    <div className="max-h-[20px] overflow-clip">{props.value.description} 
 
-                    <button className='px-2 border-2' onClick={()=>openTaskCreationFucntion(id)}>+</button>
+</div>{" "}
+    <div className="absolute left-3 top-5 border-2 p-2 text-lg rounded-full cursor-pointer" onClick={()=>props.funcToShowBoard({})}><IoIosArrowBack /></div>
+    </div><br />
+    
+    <form className=" w-full flex justify-center align-middle" onSubmit={createcard}>
+        <input type="text" className="px-2 text-gray-900 py-2 rounded shadow-md mr-1 outline-none w-[30%] text-base" onChange={e=>setCardName(e.target.value)} placeholder="New Card Title" value={cardName}/>
+        <input className='rounded shadow-md px-1 py-0 bg-gray-700' type="submit" value="Create"/>
+    </form>
+    <br />
+        <div className='mx-auto h-full flex overflow-x-auto w-[98%] bg-gradient-to-r from-gray-500 to-gray-700 shadow-inner'>
+            {allCards?.map((value,id)=>(
+                <div
+                style={{backgroundImage:`url('/sinewave.jpg')`,backgroundSize:"cover"}} 
+                key={id} className='m-2 my-4 shadow-xl w-[300px] h-[300px] bg-gray-700 rounded flex-shrink-0'>
+                    
+                    <div className="relative flex flex-col align-middle text-center w-full h-full">
+                    <div className='mt-3 text-gray-200 text-[20px] font-semibold'>{value.name}</div>{" "}
+                    
+                    
+                    
+                    
+                    <button className='absolute top-3 right-3 px-3 py-1 text-lg text-white bg-blue-500 rounded-md' onClick={()=>openTaskCreationFucntion(id)}>+</button>
                     
                     <br />
 
                     { (openTaskCreateForm && openTaskCreateFormId===id) &&
-                    <div>
-                    <form>
-                        <input type="text" onChange={e=>setTaskName(e.target.value)} placeholder="title" value={taskName}/>
-                        <input type="text" onChange={e=>setTaskDetail(e.target.value)} placeholder="details" value={taskDetail}/>
-                        <input onClick={(e)=>createtask(e,value.id)} type="submit" value="Submit"/>
+                    <div className="flex justify-center py-2 w-[96%] mx-auto">
+                    <form className="flex">
+                        <input className="outline-none p-1 text-gray-900 w-full" type="text" onChange={e=>setTaskName(e.target.value)} placeholder="Task" value={taskName}/>
+                       
+                        <input className='rounded shadow-md ml-1 px-1 bg-gray-700' onClick={(e)=>createtask(e,value.id)} type="submit" value="Create"/>
                     </form>
                     </div>
                     }
 
-                    <br /><br />
-                    <div className="border-2 border-black p-2">
+                    <div className=" p-2 max-h-full overflow-y-auto">
                         {alltasks?.map((tvalue,id)=>(
                             <div key={id}>
                             {tvalue.card===value.id && 
-                            <div className='flex-shrink-0 mx-3 my-1 border-2 border-red-500'>
-                                <span>Name= {tvalue.name}</span>
-                                <span>Details= {tvalue.details}</span>
+                            <div className='border-[1px] border-gray-500 p-1 shadow-lg rounded-sm backdrop-blur-md flex-shrink-0 h-14 overflow-y-auto align-middle mx-3 mt-2'>
+                                <span>{tvalue.name}</span>
                             </div> 
                             }
                             </div>
                         ))}
                     </div>
+                    <div className="grow"></div>
+                    <div className="bg-gray-800 text-white hover:text-red-300 hover:bg-gray-900 py-1 flex justify-center text-lg bottom-0 backdrop-blur-lg float-right cursor-pointer" onClick={(e)=>deleteCard(e,value.id)}><MdDeleteOutline /></div>
+                    </div>
                 </div>
             ))}
         </div>
-    </>
+    </div>
     
   )
 }
