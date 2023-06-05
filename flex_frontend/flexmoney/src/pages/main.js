@@ -18,20 +18,21 @@ import MainInside from "../components/mainInside";
 
 export default function Main(){
 
-    // const [allUsers,setAllUsers]=useState([])
+    const [allUsers,setAllUsers]=useState([])
 
-    // function fetchAllUsers(){
-    //     const url=`${process.env.REACT_APP_PRODUCTION_URL}app/createuser`
-    //     fetchwrapper.get(url)
-    //     .then((data) => {
-    //         setAllUsers(data);
-    //     })
-    // }
+    function fetchAllUsers(){
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/createuser`
+        fetchwrapper.get(url)
+        .then((data) => {
+            console.log("All users--> ",data)
+            setAllUsers(data);
+        })
+    }
 
-    // useEffect(()=>{
-    //     fetchAllUsers();
+    useEffect(()=>{
+        fetchAllUsers();
 
-    // },[])
+    },[])
 
     const navigate=useNavigate();
 
@@ -94,6 +95,10 @@ export default function Main(){
         fetchwrapper.get(url)
         .then((data)=>{
             setAllProjects(data);
+            if(activeProject){
+                const filtered=data.filter(obj => obj.id === activeProject);
+                setActiveProjectObject(filtered[0]);
+            }
         })
         .catch((error)=>{
             console.log(error," error from fetch Project ")
@@ -178,7 +183,7 @@ export default function Main(){
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header HandleToggleSidebar={()=>handleToggleSidebar()} Handle_logout={(e)=>handle_logout(e)} UserDetails={userDetails}/>
 
-        <MainInside projectObject={activeProjectObject}/>
+        <MainInside fetchAllProjects={fetchAllProjects} allUsers={allUsers} projectObject={activeProjectObject}/>
        </div>
     </div>
     </>

@@ -1,7 +1,8 @@
 import React,{useEffect, useState} from 'react';
 import { fetchwrapper } from '../../helpers/fetchwrapper';
 
-import {MdDeleteOutline} from 'react-icons/md'
+import {MdDeleteOutline} from 'react-icons/md';
+import {FaRegUserCircle} from 'react-icons/fa';
 
 
 export default function Boards(props) {
@@ -65,6 +66,42 @@ export default function Boards(props) {
     },[])
 
 
+    const [selectedOption, setSelectedOption] = useState('');
+
+    const handleSelectChange = (event) => {
+        setSelectedOption(event.target.value);
+    };
+
+    function addMemberFunc(){
+        const filteredData = props.allUsers.filter(obj => obj.username === selectedOption);
+        console.log(filteredData[0]?.id," selectedoption");
+
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/projects/members`;
+        const params={ project_id: props.ProjectObject.id,members_add:filteredData[0].id };
+        fetchwrapper.patch(url,params)
+        .then((data) => {
+            props.fetchAllProjects();
+            setSelectedOption('');
+        })
+        .catch((error)=>{
+            console.log(error," error from post Board ")
+        })
+    }
+
+    function deleteMemberFunc(id){
+
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/projects/members`;
+        const params={ project_id: props.ProjectObject.id,members_remove:id };
+        fetchwrapper.delete_(url,params)
+        .then((data) => {
+            props.fetchAllProjects();
+        })
+        .catch((error)=>{
+            console.log(error," error from post Board ")
+        })
+    }
+
+
 
   return (
     <>
@@ -98,9 +135,53 @@ export default function Boards(props) {
                     </div>
                 </div>}
                 
+                
                 </div>
             ))}
+            {allBoards===[]||(<div className="h-[200px]"></div>)}
+            
         </div>
+
+        <br />
+        {props.ProjectObject!==null&&
+        <><h1>Add Members To Project</h1>
+        <div className='flex justify-center'>
+        <select
+            value={selectedOption}
+            onChange={handleSelectChange} 
+            className="px-2 text-gray-900 py-2 rounded shadow-md mr-1 outline-none w-[30%] text-base">
+
+            {props.allUsers?.map((option, index) => (
+                <React.Fragment key={index}>
+                {props.ProjectObject?.members.includes(option.id)||<option onClick={()=>setSelectedOption(option.username)}>{option.username}</option>}
+                </React.Fragment>
+            ))}
+
+        </select>
+        <button 
+            className='rounded shadow-md px-3 py-0 bg-gray-700'
+            onClick={addMemberFunc}>Add</button>
+        </div></>}
+        {props.ProjectObject?.members.length!==0&&props.ProjectObject!==null&&
+        <div className='mt-2 bg-gradient-to-r from-gray-500 to-gray-700 p-1 flex w-[99%] mx-auto overflow-x-auto'>
+        {props.allUsers?.map((option, index) => (
+            <div key={index} className='flex-shrink-0'>
+                {props.ProjectObject?.members.includes(option.id)&&
+                <div
+                    title="Project Assigned (4)  Task Assigned (3)"
+                    className="flex-shrink-0 bg-gray-700 shadow-md  rounded-md p-2  my-1 mx-2 pr-8 relative">
+                
+                <h1>{option.username}</h1>
+                <div 
+                    onClick={()=>deleteMemberFunc(option.id)}
+                    className='absolute right-1 top-2 text-lg text-gray-300 hover:text-red-300 hover:bg-gray-800 p-1 rounded-md'
+                ><MdDeleteOutline/></div></div>}
+                
+            </div>
+        ))}
+        </div>}
+        
+        
     </>
   )
 }

@@ -64,7 +64,7 @@ class Task(models.Model):
     name = models.CharField(max_length=255)
     details = models.TextField(blank=True,null=True)
     due = models.DateTimeField(blank=True,null=True)
-    members = models.ManyToManyField(User, blank=True, related_name='task_members')
+    member = models.ForeignKey(User,null=True, blank=True, on_delete=models.CASCADE)
     card = models.ForeignKey(Card, on_delete=models.CASCADE, related_name='tasks')
 
     def __str__(self):

@@ -98,7 +98,7 @@ class UserBoards(APIView):
                 'description': request.data.get('description'), 
                 'user':self.request.user.id
             }
-            
+
         serializer = BoardSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -160,17 +160,20 @@ class CardTask(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    # def delete(self, request, *args, **kwargs):
-    #     CARD=Card.objects.get(id=request.data.get('card_id'))
-    #     CARD.delete()
-    #     return Response("CARD deleted sucessfully")
+    def delete(self, request, *args, **kwargs):
+        CARD=Task.objects.get(id=request.data.get('card_id'))
+        CARD.delete()
+        return Response("CARD deleted sucessfully")
 
 
 class UserProjects(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        projects=Project.objects.filter(user=self.request.user)
+        user_projects=Project.objects.filter(user=self.request.user)
+        member_projects = Project.objects.filter(members__in=[self.request.user.id])
+
+        projects = (user_projects | member_projects).distinct()
         serializer=ProjectSerializer(projects,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -190,4 +193,55 @@ class UserProjects(APIView):
         Projects=Project.objects.get(id=request.data.get('project_id'))
         Projects.delete()
         return Response("Project deleted sucessfully")
+
+class ProjectMembersView(APIView):
+    def patch(self, request,):
+        try:
+            project = Project.objects.get(id=request.data.get('project_id'))
+        except Project.DoesNotExist:
+            return Response({'error': 'Project not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        member_id = request.data.get('members_add')
+
+        if member_id is not None:
+            project.members.add(member_id)
+            project.save()
+
+        serializer = ProjectSerializer(project)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        try:
+            project = Project.objects.get(id=request.data.get('project_id'))
+        except Project.DoesNotExist:
+            return Response({'error': 'Project not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        member_id = request.data.get('members_remove')
+
+        if member_id is not None:
+            project.members.remove(member_id)
+            project.save()
+
+        serializer = ProjectSerializer(project)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class TaskAssignView(APIView):
+    def patch(self, request):
+        try:
+            task = Task.objects.get(id=request.data.get('task_id'))
+        except Task.DoesNotExist:
+            return Response({'error': 'Task not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        assigned_member_user = User.objects.get(id=request.data.get('assigned_member'))
+
+        if request.data.get('assigned_member') is not None:
+            task.member = assigned_member_user
+            
+        else:
+            task.member = None
+
+        task.save()
+
+        serializer = TaskSerializer(task)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 

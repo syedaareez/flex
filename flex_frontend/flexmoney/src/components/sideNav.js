@@ -5,7 +5,7 @@ import {MdDeleteOutline} from 'react-icons/md'
 
 export default function SideNav(props){
 
-
+    const tasks=["Task1","Task2","Task3"];
 
     return (
         <div className='relative h-screen'>
@@ -24,7 +24,7 @@ export default function SideNav(props){
                     <input className='rounded text-gray-300 shadow-md px-1 py-0 bg-gray-700' type="submit" value="Create" />
                 </form>
             </div>
-            <br /><br />
+            <br />
             <h1 className='text-white text-xl p-2 pl-4 '>Personal</h1>
 
             <div 
@@ -44,6 +44,23 @@ export default function SideNav(props){
                     <span 
                         onClick={(e)=>props.deleteProject(e,value.id)}
                         className='absolute right-2 text-lg text-gray-300 hover:text-red-300 hover:bg-gray-800 p-1 rounded-md'><MdDeleteOutline/></span>
+                </div>
+               
+            ))}
+           
+            </div>
+
+
+
+            <div className="mt-4">
+
+                <h1 className='text-white text-xl p-2 pl-4 '>Tasks Assigned</h1>
+                {tasks?.map((value,id)=>(
+                
+                <div key={id} className={`relative pl-4 flex items-center p-2 ${props.activeProject===value.id&&"bg-gray-700 "} hover:bg-gray-700  text-gray-400 hover:text-white`}>
+                    <span>{value}</span>
+                    
+                    
                 </div>
                
             ))}

@@ -61,6 +61,11 @@ export default function Board(props) {
         fetchwrapper.get(url)
         .then((data)=>{
             setAlltasks(data);
+            console.log("All tasks--> ",data)
+            if(taskOpened){
+                const filtered=data.filter(obj => obj.id === taskOpened.id);
+                setTaskOpened(filtered);
+            }
         })
         .catch((error)=>{
             console.log(error," error from fetch Board ")
@@ -107,6 +112,62 @@ export default function Board(props) {
     }
 
 
+    function deleteTaskFunc(e,id){
+        e.stopPropagation();
+        const url=`${process.env.REACT_APP_PRODUCTION_URL}app/boards/${cardBoard}/tasks`;
+        const params={ card_id: id };
+        fetchwrapper.delete_(url,params)
+        .then((data) => {
+            fetchAllTasks();
+        })
+        .catch((error)=>{
+            console.log(error," error from post Board ")
+        })
+        
+    }
+
+
+    const [openTask, setOpenTask]=useState(false);
+    const [taskOpened, setTaskOpened]=useState(null);
+    const [cardId_of_taskOpened, setCardId_of_TaskOpened]=useState(null);
+
+    function taskOpenFunc(task){
+        setOpenTask(true);
+        setTaskOpened(task);
+        setCardId_of_TaskOpened(task.card);
+    }
+
+    function closeTask(){
+        setOpenTask(false);
+        setTaskOpened(null);
+        setCardId_of_TaskOpened(null);
+    }
+
+    const [selectedOption, setSelectedOption] = useState(undefined);
+
+    const [ assignedUser, setAssignedUser]=useState('');
+
+    const handleSelectChange = (event) => {
+        setSelectedOption(event.target.value);
+    };
+
+    function addMemberFunc(){
+        // const filteredData = props.allUsers.filter(obj => obj.username === selectedOption);
+        // console.log(filteredData[0]?.id," selectedoption");
+
+        // const url=`${process.env.REACT_APP_PRODUCTION_URL}app/task/members`;
+        // const params={ task_id:taskOpened.id,assigned_member:filteredData[0]?.id};
+        // fetchwrapper.patch(url,params)
+        // .then((data) => {
+        //     fetchAllTasks();
+        //     setSelectedOption(undefined);
+        // })
+        // .catch((error)=>{
+        //     console.log(error," error from post Board ")
+        // })
+        setAssignedUser(selectedOption);
+    }
+
   return (
     <div className="">
     <div className='relative flex flex-col text-center '>
@@ -114,7 +175,7 @@ export default function Board(props) {
     <div className="text-[45px]">{props.value.title}</div>{" "}
     <div className="max-h-[20px] overflow-clip">{props.value.description} 
 
-</div>{" "}
+    </div>{" "}
     <div className="absolute left-3 top-5 border-2 p-2 text-lg rounded-full cursor-pointer" onClick={()=>props.funcToShowBoard({})}><IoIosArrowBack /></div>
     </div><br />
     
@@ -139,6 +200,14 @@ export default function Board(props) {
                     
                     <br />
 
+
+
+
+                    {/* TASK MANAGEMENT STARTED */}
+
+
+
+
                     { (openTaskCreateForm && openTaskCreateFormId===id) &&
                     <div className="flex justify-center py-2 w-[96%] mx-auto">
                     <form className="flex">
@@ -149,17 +218,63 @@ export default function Board(props) {
                     </div>
                     }
 
-                    <div className=" p-2 max-h-full overflow-y-auto">
-                        {alltasks?.reverse().map((tvalue,id)=>(
-                            <div key={id}>
-                            {tvalue.card===value.id && 
-                            <div className='border-[1px] border-gray-500 p-1 shadow-lg rounded-sm backdrop-blur-md flex-shrink-0 h-14 overflow-y-auto align-middle mx-3 mt-2'>
-                                <span>{tvalue.name}</span>
-                            </div> 
-                            }
+                    {openTask&&cardId_of_taskOpened===value.id?<>
+
+                        {/* Selected Task */}
+
+                        <div className="h-full border-[1px] border-gray-300 p-2 relative overflow-y-auto">
+                        <div className="text-lg">{taskOpened.name}</div>
+                        <br />
+                        <div>Set Due</div>
+                        <div 
+                            className="absolute left-1 top-2 border-2 p-2 text-lg rounded-full cursor-pointer"  
+                            onClick={closeTask}><IoIosArrowBack /></div>
+                            <br />
+                            <h1>Assign To</h1>
+                            <div className='w-full flex justify-center'>
+                            <select
+                                value={selectedOption}
+                                onChange={handleSelectChange} 
+                                className="px-2 text-gray-900 py-1 rounded shadow-md mr-1 outline-none w-[80%] text-base">
+
+                                {props.allUsers?.map((option, index) => (
+                                    <React.Fragment key={index}>
+                                    {props.ProjectObject?.members.includes(option.id)&&<option onClick={()=>setSelectedOption(option.username)}>{option.username}</option>}
+                                    </React.Fragment>
+                                ))}
+
+                            </select>
+                            <button 
+                                className='rounded shadow-md px-3 py-0 bg-gray-700 text-bold'
+                                onClick={addMemberFunc}>{">"}</button>
                             </div>
-                        ))}
-                    </div>
+
+                            Assigned to = {assignedUser}
+                        </div>
+
+                        
+
+                    </>:<>
+
+                        {/* All Tasks */}
+
+                        <div className=" p-2 max-h-full overflow-y-auto">
+                            {alltasks?.reverse().map((tvalue,id)=>(
+                                <div key={id}>
+                                {tvalue.card===value.id && 
+                                <div onClick={()=>taskOpenFunc(tvalue)} className='border-[1px] relative border-gray-500 p-1 shadow-lg rounded-sm backdrop-blur-md flex-shrink-0 h-14 overflow-y-auto align-middle mx-3 mt-2'>
+                                    <span>{tvalue.name}</span>
+                                    <span onClick={(e)=>deleteTaskFunc(e,tvalue.id)} className=" absolute right-1 top-3 text-lg text-gray-300 bg-gray-700 hover:text-red-300 hover:bg-gray-800 p-1 rounded-md"><MdDeleteOutline/></span>
+                                </div> 
+                                }
+                                </div>
+                            ))}
+                        </div>
+
+
+                    </>}
+
+                    
                     <div className="grow"></div>
                     <div className="bg-gray-800 text-white hover:text-red-300 hover:bg-gray-900 py-1 flex justify-center text-lg bottom-0 backdrop-blur-lg float-right cursor-pointer" onClick={(e)=>deleteCard(e,value.id)}><MdDeleteOutline /></div>
                     </div>

@@ -100,8 +100,22 @@ function delete_(url,params){
     })
 }
 
+function patch(url,params){
+    const headers=getHeaders();
+    
+    return fetch(url,{
+        method:"PATCH",
+        headers:headers,
+        body:JSON.stringify({...params}),
+    })
+    .then(response=>{
+        return response.json();
+    })
+}
+
 export const fetchwrapper = {
     get,
     post,
     delete_,
+    patch,
 };
